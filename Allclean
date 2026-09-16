@@ -1,0 +1,65 @@
+#!/bin/bash
+# Copyright (c) 2026 Xuhui Zhou
+# Copyright (c) 2026 Michael Sleeman
+# SPDX-License-Identifier: MIT
+# Originally developed by Xuhui Zhou for the Neural EnKF.
+# Modified by Michael Sleeman for the Level Set EnKF.
+#
+# Clean ensemble case files for a specific case_name
+# Usage: ./Allclean sod
+#        ./Allclean toro
+#        ./Allclean shuOsher
+#        ./Allclean bw2d
+
+set -e  # stop on error
+
+case_name="$1"
+
+if [ -z "$case_name" ]; then
+    echo "Error: case_name not provided."
+    echo "Usage: $0 [sod|toro|shuOsher|bw2d]"
+    exit 1
+fi
+
+echo "Cleaning ensemble case for: $case_name"
+
+# remove ensemble_samples.csv if exists
+if [ -f ensemble_samples.csv ]; then
+    rm ensemble_samples.csv
+    echo "Removed ensemble_samples.csv"
+fi
+
+# remove run.log if exists
+if [ -f run.log ]; then
+    rm run.log
+    echo "Removed run.log"
+fi
+
+# remove case directories (e.g., sod_*, bw_*, toro_*)
+for d in ${case_name}_*; do
+    if [ -d "$d" ]; then
+        rm -rf "$d"
+        echo "Removed $d"
+    fi
+done
+
+# remove master file (e.g., sod_master.h5)
+master_file="${case_name}_master.h5"
+if [ -f "$master_file" ]; then
+    rm "$master_file"
+    echo "Removed $master_file"
+fi
+
+# remove da_results folder
+if [ -d da_results ]; then
+    rm -rf da_results
+    echo "Removed da_results"
+fi
+
+# remove results_figure folder
+if [ -d results_figure ]; then
+    rm -rf results_figure
+    echo "Removed results_figure"
+fi
+
+echo "Done."
